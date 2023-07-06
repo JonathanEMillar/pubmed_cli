@@ -33,7 +33,7 @@ Before running the script, make sure you have the following prerequisites instal
 5. Run the script using the following command:
 
    ```shell
-   python pubmed_search.py -q "Respiratory Distress Syndrome, Adult" -d 7 -o
+   python pubmed_cli.py -q "Respiratory Distress Syndrome, Adult" -d 7 -o
 
    This command will search PubMed for publications containing the term "Respiratory Distress Syndrome, Adult" within the last 7 days and output the results to a CSV file.
    Use the -q option to specify the query term, -d to specify the number of days back to search, and -o to enable CSV output. You can omit the options to use the default values.
