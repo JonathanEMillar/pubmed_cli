@@ -8,7 +8,7 @@ This repository contains a Python script that allows you to search PubMed for pu
 - Specify the number of days back to search
 - Fetch article details including title, authors, journal, publication date, PubMed ID, and DOI URL
 - View abstracts of selected articles
-- Open article URLs in Safari browser
+- Open article URLs in default browser
 - Option to output the results to a CSV file
 
 ## Prerequisites
@@ -19,6 +19,15 @@ Before running the script, make sure you have the following prerequisites instal
 - Biopython
 - tqdm
 - pandas
+- argparse
+- concurrent.futures
+- urllib
+- configparser
+- webbrowser
+- logging
+- shutil
+- yaml
+- joblib 
 
 ## Usage
 
@@ -28,13 +37,20 @@ Before running the script, make sure you have the following prerequisites instal
    ```shell
    pip install biopython tqdm pandas
 
-3. Replace the placeholder email address and NCBI API key in the script with your own. You can obtain an API key from the [NCBI API Key website](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/).
-4. Open a terminal or command prompt and navigate to the directory where the script is located.
-5. Run the script using the following command:
+3. Create a config.yaml and save it in the same directory. This should contain the following:
+
+   ```yaml
+   Email: [your email]
+   APIKey: [your Pubmed API key]
+   ```
+   You can obtain an API key from the [NCBI API Key website](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/).
+6. Open a terminal or command prompt and navigate to the directory where the script is located.
+7. Run the script using the following command:
 
    ```shell
    python pubmed_cli.py -q "Respiratory Distress Syndrome, Adult" -d 7 -o
-
+   ```
    This command will search PubMed for publications containing the term "Respiratory Distress Syndrome, Adult" within the last 7 days and output the results to a CSV file.
    Use the -q option to specify the query term, -d to specify the number of days back to search, and -o to enable CSV output. You can omit the options to use the default values.
-6. The script will display the search results in the terminal or command prompt. If the -o option is used, the results will also be written to a CSV file in the ~/Downloads directory.
+8. The script will display the search results in the terminal or command prompt. If the -o option is used, the results will also be written to a CSV file in the ~/Downloads directory.
+9. The program caches search results, saving additional API calls when the query is repeated. To clear the cache use the -c flag.
