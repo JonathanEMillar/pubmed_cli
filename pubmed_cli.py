@@ -37,10 +37,10 @@ config_path = os.path.join(script_dir, 'config.yaml')
 
 # Attempt to load the configuration file
 try:
-    with open(config_path, 'r') as f:
+    with open('config.yaml', 'r') as f:
         config = yaml.safe_load(f)
 except FileNotFoundError:
-    print(f"Configuration file not found at {config_path}. Please ensure a valid 'config.yaml' file is present.")
+    print("Configuration file not found. Please ensure a valid 'config.yaml' file is present.")
     exit(1)
 except yaml.YAMLError as err:
     print("Error occurred while loading the configuration file: ", err)
@@ -85,22 +85,23 @@ def open_in_default_browser(url):
     else:
         logging.error("Unsupported URL format.")
 
-def main():
-    config = load_config()
-    config = prompt_for_missing_config(config)
+# Argument parser
+parser = argparse.ArgumentParser(description='Search PubMed for a specific term and a specific number of days back.')
+parser.add_argument('-d', '--days', type=int, default=1, help='Number of days back to search.')
+parser.add_argument('-o', '--output', action='store_true', help='Output the results to a CSV file.')
+parser.add_argument('-q', '--query', type=str, default='Respiratory Distress Syndrome, Adult', help='Query term for PubMed search.')
+parser.add_argument('-c', '--clearcache', action='store_true', help='Clear the cache before running.')  # added clear cache argument
+args = parser.parse_args()
 
-    args = parse_arguments()
-
-    # If clearcache argument is specified, clear the cache
-    if args.clearcache:
-        shutil.rmtree(cache_dir)  # remove cache directory and its contents
-        os.makedirs(cache_dir, exist_ok=True)  # create an empty cache directory
-        print("Cache cleared.")
-
- Entrez.email = config['Email']
-Entrez.api_key = config['APIKey']
+# If clearcache argument is specified, clear the cache
+if args.clearcache:
+    shutil.rmtree(cache_dir)  # remove cache directory and its contents
+    os.makedirs(cache_dir, exist_ok=True)  # create an empty cache directory
+    print("Cache cleared.")
 
 try:
+    Entrez.api_key = '1dfd52c3d610a8837377b4dbccad19ea3509'
+
     # Query term
     query_term = args.query
 
