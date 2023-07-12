@@ -100,8 +100,6 @@ if args.clearcache:
     print("Cache cleared.")
 
 try:
-    Entrez.api_key = '1dfd52c3d610a8837377b4dbccad19ea3509'
-
     # Query term
     query_term = args.query
 
