@@ -37,7 +37,7 @@ Before running the script, make sure you have the following prerequisites instal
    ```shell
    pip install biopython tqdm pandas
 
-3. Create a config.yaml and save it in the same directory. This should contain the following:
+3. Create a config.yml and save it in the same directory. This should contain the following:
 
    ```yaml
    Email: [your email]
