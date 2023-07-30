@@ -35,7 +35,7 @@ Before running the script, make sure you have the following prerequisites instal
 2. Install the required dependencies by running the following command:
 
    ```shell
-   pip install biopython tqdm pandas
+   pip install -r requirements.txt
 
 3. Create a config.yml and save it in the same directory. This should contain the following:
 
