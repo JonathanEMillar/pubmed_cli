@@ -38,8 +38,11 @@ pip install -r requirements.txt
    python pubmed_cli.py -q "Respiratory Distress Syndrome, Adult" -d 7 -o
    ```
    This command will search PubMed for publications containing the term "Respiratory Distress Syndrome, Adult" within the last 7 days and output the results to a CSV file.
+
    Use the -q option to specify the query term, -d to specify the number of days back to search, and -o to enable CSV output. You can omit the options to use the default values.
-8. The script will display the search results in the terminal. 
-9. The program caches search results, saving additional API calls when the query is repeated. To clear the cache use the -c flag.
-10. Individual record can be selected to view the abstract.
-11. An option is available to open the slected records PubMed entry in the deafult browser.
+
+   A default search term can be set in the config.yaml
+9. The script will display the search results in the terminal. 
+10. The program caches search results, saving additional API calls when the query is repeated. To clear the cache use the -c flag.
+11. Individual record can be selected to view the abstract.
+12. An option is available to open the slected records PubMed entry in the deafult browser.
