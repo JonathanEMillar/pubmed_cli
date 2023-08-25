@@ -1,4 +1,4 @@
-# PubMed Search Script
+# PubMed Search CLI
 
 This repository contains a Python script that allows you to search PubMed for publications based on a specific query term and a specified number of days back. The script utilizes the Biopython library to interact with the PubMed database.
 
