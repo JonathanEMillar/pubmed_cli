@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
    Use the -q option to specify the query term, -d to specify the number of days back to search, and -o to enable CSV output. You can omit the options to use the default values.
 
-   A default search term can be set in the config.yaml
+   A default search term can be set in the config.yaml.
 9. The script will display the search results in the terminal. 
 10. The program caches search results, saving additional API calls when the query is repeated. To clear the cache use the -c flag.
 11. Individual record can be selected to view the abstract.
