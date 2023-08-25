@@ -13,21 +13,11 @@ This repository contains a Python script that allows you to search PubMed for pu
 
 ## Prerequisites
 
-Before running the script, make sure you have the following prerequisites installed:
+Before running the script, install the dependencies:
 
-- Python 3.x
-- Biopython
-- tqdm
-- pandas
-- argparse
-- concurrent.futures
-- urllib
-- configparser
-- webbrowser
-- logging
-- shutil
-- yaml
-- joblib 
+```
+pip install -r requirements.txt
+```
 
 ## Usage
 
