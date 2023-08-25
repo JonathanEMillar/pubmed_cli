@@ -1,7 +1,7 @@
 ################################################################################
 
-# PubMed ARDS search
-# -- Retrieves recent PubMed entries matching the ARDS MeSH term
+# PubMed search
+# -- Retrieves recent PubMed entries matching a MeSH term
 #    -- runs as CLI
 #    -- arguments
 #       -d = days          [range == 1-90] (default == 1) 
