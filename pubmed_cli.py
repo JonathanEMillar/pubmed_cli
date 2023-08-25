@@ -1,15 +1,18 @@
 ################################################################################
+
 # PubMed ARDS search
 # -- Retrieves recent PubMed entries matching the ARDS MeSH term
 #    -- runs as CLI
 #    -- arguments
 #       -d = days          [range == 1-90] (default == 1) 
-#       -o = output        prints .csv to downloads folder
-#       -c = clear cache   clears cache
+#       -q = query         PubMed search term (defaults to config.yaml)
+#       -o = output        prints .csv to local directory (path set in config.yaml)
+#       -c = clear cache   clears cach
+
 ################################################################################
 # Author: JE Millar
-# Date 2023-07-06
-# Version: 1.0
+# Date 2023-08-25
+# Version: 1.1
 # Python Version: 3.10.9
 # en: GB UTF-8
 ################################################################################
@@ -28,6 +31,8 @@ import yaml
 from Bio import Entrez, Medline
 from tqdm import tqdm
 from joblib import Memory
+
+# --- Configuration -----------------------------------------------------------
 
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -49,6 +54,10 @@ except yaml.YAMLError as err:
 # Now you can access your parameters
 Entrez.email = config['Email']
 Entrez.api_key = config['APIKey']
+output_directory = config['OutputDirectory']
+query_term = config['QueryTerm']
+
+# --- Logging and Cache -------------------------------------------------------
 
 # Configure logging
 logging.basicConfig(filename='pubmed.log', level=logging.INFO)
@@ -57,6 +66,8 @@ logging.basicConfig(filename='pubmed.log', level=logging.INFO)
 cache_dir = ".article_cache"
 os.makedirs(cache_dir, exist_ok=True)
 memory = Memory(cache_dir, verbose=0)
+
+# --- Functions ---------------------------------------------------------------
 
 @memory.cache
 def fetch_article_details(id):
@@ -85,12 +96,14 @@ def open_in_default_browser(url):
     else:
         logging.error("Unsupported URL format.")
 
+# --- Arguments ---------------------------------------------------------------
+
 # Argument parser
 parser = argparse.ArgumentParser(description='Search PubMed for a specific term and a specific number of days back.')
 parser.add_argument('-d', '--days', type=int, default=1, help='Number of days back to search.')
 parser.add_argument('-o', '--output', action='store_true', help='Output the results to a CSV file.')
-parser.add_argument('-q', '--query', type=str, default='Respiratory Distress Syndrome, Adult', help='Query term for PubMed search.')
-parser.add_argument('-c', '--clearcache', action='store_true', help='Clear the cache before running.')  # added clear cache argument
+parser.add_argument('-q', '--query', type=str, help='Query term for PubMed search.')
+parser.add_argument('-c', '--clearcache', action='store_true', help='Clear the cache before running.')  
 args = parser.parse_args()
 
 # If clearcache argument is specified, clear the cache
@@ -99,9 +112,11 @@ if args.clearcache:
     os.makedirs(cache_dir, exist_ok=True)  # create an empty cache directory
     print("Cache cleared.")
 
+# --- Execution ---------------------------------------------------------------
+
 try:
     # Query term
-    query_term = args.query
+    query_term = args.query if args.query else query_term
 
     # Use Entrez esearch to find ids of articles matching the query term
     handle = Entrez.esearch(db='pubmed', term=query_term, reldate=args.days, datetype='pdat')
@@ -157,10 +172,10 @@ try:
     # If output argument is provided, write to a CSV file
     if args.output:
         df = pd.DataFrame(data)
-        output_path = os.path.expanduser("~/Downloads/pubmed_results.csv")
+        output_path = os.path.join(output_directory, 'pubmed_results.csv')
         df.to_csv(output_path, index=False)
         print(f"Results have been written to: {output_path}")
-
+    
     try:
         # Article selection and abstract viewing
         while True:
