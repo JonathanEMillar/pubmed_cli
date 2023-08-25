@@ -7,7 +7,7 @@ This repository contains a Python script that allows you to search PubMed for pu
 - Search PubMed for recent publications using a specific query term
 - Specify the number of days back to search
 - Fetch article details including title, authors, journal, publication date, PubMed ID, and DOI URL
-- Option to output the results to a CSV file
+- Option to output the results to a .csv file
 - View abstracts of selected articles
 - Open article URLs in default browser
 
