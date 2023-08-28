@@ -1,5 +1,4 @@
 argparse==1.4.0
-bibtexparser==1.2.0
 Bio==1.10.0
 concurrent.futures==3.1.1
 configparser==5.0.2
