@@ -14,6 +14,15 @@ from Bio import Entrez, Medline
 from tqdm import tqdm
 from joblib import Memory
 
+
+# --- Custom exceptions -------------------------------------------------------
+
+class ConfigurationError(Exception):
+    pass
+
+class FetchError(Exception):
+    pass
+
 # --- Configuration -----------------------------------------------------------
 
 # Get the directory of the current script
@@ -27,10 +36,10 @@ try:
     with open('config.yaml', 'r') as f:
         config = yaml.safe_load(f)
 except FileNotFoundError:
-    print("Configuration file not found. Please ensure a valid 'config.yaml' file is present.")
+    raise ConfigurationError("Configuration file not found. Please ensure a valid 'config.yaml' file is present.")
     exit(1)
 except yaml.YAMLError as err:
-    print("Error occurred while loading the configuration file: ", err)
+    raise ConfigurationError(f"Error occurred while loading the configuration file: {err}")
     exit(1)
 
 # Now you can access your parameters
@@ -67,10 +76,9 @@ def fetch_article_details(id):
                     time.sleep(wait_time)  # Wait before retrying
                     continue
             # If it's not a 429 error or we've hit the max number of retries, raise the error
-            raise err
+            raise FetchError(f"Error occurred while fetching details for ID {id}: {err}")
         except Exception as e:
-            logging.error(f"Error occurred while fetching details for ID {id}: {e}")
-            return None
+            raise FetchError(f"Error occurred while fetching details for ID {id}: {e}")
 
 def open_in_default_browser(url):
     if url.startswith("https://doi.org/") or url.startswith("https://pubmed.ncbi.nlm.nih.gov/"):
@@ -188,3 +196,7 @@ try:
 
 except Exception as e:
     logging.error(f"An error occurred: {e}")
+
+finally:
+    # Release resources here
+    pass
