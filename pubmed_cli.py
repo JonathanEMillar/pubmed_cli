@@ -1,21 +1,3 @@
-################################################################################
-
-# PubMed search
-# -- Retrieves recent PubMed entries matching a MeSH term
-#    -- runs as CLI
-#    -- arguments
-#       -d = days          [range == 1-90] (default == 1) 
-#       -q = query         PubMed search term (defaults to config.yaml)
-#       -o = output        prints .csv to local directory (path set in config.yaml)
-#       -c = clear cache   clears cach
-
-################################################################################
-# Author: JE Millar
-# Date 2023-08-25
-# Version: 1.1
-# Python Version: 3.10.9
-# en: GB UTF-8
-################################################################################
 
 import argparse
 import concurrent.futures
