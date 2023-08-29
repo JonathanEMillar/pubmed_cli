@@ -46,3 +46,10 @@ pip install -r requirements.txt
 10. The program caches search results, saving additional API calls when the query is repeated. To clear the cache use the -c flag.
 11. Individual record can be selected to view the abstract.
 12. An option is available to open the slected records PubMed entry in the deafult browser.
+
+## To-Do
+
+-    [] Modularise
+-    [] Add ability to try addiitonal queries without restarting the program
+-    [] Add pagination of search results
+-    [] Improve formatting
