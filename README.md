@@ -53,3 +53,4 @@ pip install -r requirements.txt
 - [ ] Add ability to try addiitonal queries without restarting the program
 - [ ] Add pagination of search results
 - [ ] Improve formatting
+- [ ] Create unit tests
