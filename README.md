@@ -50,7 +50,7 @@ pip install -r requirements.txt
 ## To-Do
 
 - [ ] Modularise
-- [ ] Add ability to try addiitonal queries without restarting the program
+- [x] Add ability to try addiitonal queries without restarting the program
 - [ ] Add pagination of search results
 - [ ] Improve formatting
-- [ ] Create unit tests
+- [x] Create unit tests
