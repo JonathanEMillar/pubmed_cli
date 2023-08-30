@@ -1,5 +1,6 @@
 import argparse
 import concurrent.futures
+import sys
 import os
 import time
 import urllib
@@ -318,16 +319,20 @@ def main():
 
     This function is intended to be called when the script is run as a standalone program.
     """
-    args = parse_arguments()
-    validate_args(args)
-    clear_cache_if_needed(args)
-    print()
-    idlist = fetch_article_ids(args)
-    print()
-    records = fetch_all_article_details(idlist)
-    print()
-    print_and_store_results(records, args)
-    interact_with_user(records)
+    while True:
+        args = parse_arguments()
+        validate_args(args)
+        clear_cache_if_needed(args)
+        print()
+        idlist = fetch_article_ids(args)
+        print()
+        records = fetch_all_article_details(idlist)
+        print()
+        print_and_store_results(records, args)
+        interact_with_user(records)
+        another_query = input("Do you wish to perform another query? (y/n): ")
+        if another_query.lower() != 'y':
+            break
 
 if __name__ == "__main__":
     main()
