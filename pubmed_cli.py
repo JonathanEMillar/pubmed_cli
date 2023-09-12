@@ -24,31 +24,70 @@ class FetchError(Exception):
 
 # --- Configuration -----------------------------------------------------------
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
+def setup_config():
+    """
+    Sets up the configuration for the script.
 
-config_path = os.path.join(script_dir, 'config.yaml')
+    This function reads the configuration from a 'config.yaml' file in the same directory as the script.
+    It sets the email, API key, output directory, and query term for the Entrez module.
 
-try:
-    with open('config.yaml', 'r') as f:
-        config = yaml.safe_load(f)
-except FileNotFoundError:
-    raise ConfigurationError("Configuration file not found. Please ensure a valid 'config.yaml' file is present.")
-    exit(1)
-except yaml.YAMLError as err:
-    raise ConfigurationError(f"Error occurred while loading the configuration file: {err}")
-    exit(1)
+    Raises:
+        ConfigurationError: If the configuration file is not found or an error occurs while loading it.
 
-Entrez.email = config['Email']
-Entrez.api_key = config['APIKey']
-output_directory = config['OutputDirectory']
-query_term = config['QueryTerm']
+    Returns:
+        dict: The loaded configuration.
+    """
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(script_dir, 'config.yaml')
+
+    try:
+        with open('config.yaml', 'r') as f:
+            config = yaml.safe_load(f)
+    except FileNotFoundError:
+        raise ConfigurationError("Configuration file not found. Please ensure a valid 'config.yaml' file is present.")
+        exit(1)
+    except yaml.YAMLError as err:
+        raise ConfigurationError(f"Error occurred while loading the configuration file: {err}")
+        exit(1)
+
+    Entrez.email = config['Email']
+    Entrez.api_key = config['APIKey']
+    output_directory = config['OutputDirectory']
+    query_term = config['QueryTerm']
+
+    return config
+
+config = setup_config()
 
 # --- Logging and Cache -------------------------------------------------------
 
-logging.basicConfig(filename='pubmed.log', 
-                    level=logging.INFO, 
-                    format='%(asctime)s - %(levelname)s - %(funcName)s - %(lineno)d - %(message)s')
+def setup_logger():
+    """
+    Sets up the logger for the script.
 
+    This function creates a logger named 'pubmed_logger' that writes log messages to a file named 'pubmed.log'.
+    The logger's level is set to DEBUG, so it logs all messages of level DEBUG and higher.
+    The log messages are formatted to include the timestamp, logger name, message level, and message.
+
+    Returns:
+        logging.Logger: The created logger.
+    """
+    logger = logging.getLogger('pubmed_logger')
+    logger.setLevel(logging.DEBUG)  
+
+    handler = logging.FileHandler('pubmed.log')
+    handler.setLevel(logging.DEBUG)  
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+
+    logger.addHandler(handler)
+
+    logger.info('Logger created')
+
+    return logger
+
+logger = setup_logger()
 cache_dir = ".article_cache"
 os.makedirs(cache_dir, exist_ok=True)
 memory = Memory(cache_dir, verbose=0)
@@ -71,7 +110,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Search PubMed for a specific term and a specific number of days back.')
     parser.add_argument('-d', '--days', type=int, default=1, help='Number of days back to search.')
     parser.add_argument('-o', '--output', action='store_true', help='Output the results to a CSV file.')
-    parser.add_argument('-q', '--query', type=str, default=query_term, help='Query term for PubMed search.')
+    parser.add_argument('-q', '--query', type=str, default=config['QueryTerm'], help='Query term for PubMed search.')
     parser.add_argument('-c', '--clearcache', action='store_true', help='Clear the cache before running.')  
     args = parser.parse_args()
     return args
@@ -87,11 +126,12 @@ def validate_args(args):
         SystemExit: If the number of days is not a positive integer or the query term is empty.
     """
     if args.days <= 0:
-        logging.error("The number of days must be a positive integer.")
+        logger.error("The number of days must be a positive integer.")
         print("Error: The number of days must be a positive integer.")
         sys.exit(1)
 
     if args.query is None or args.query.strip() == "":
+        logger.error("The query term must not be empty.")
         print("Error: The query term must not be empty.")
         sys.exit(1)
 
@@ -127,21 +167,21 @@ def fetch_article_details(id):
         try:
             with Entrez.efetch(db='pubmed', id=id, rettype='medline', retmode='text') as fetch_handle:
                 record = Medline.read(fetch_handle)
-                logging.info(f"Successfully fetched details for ID {id}")
+                logger.info(f"Successfully fetched details for ID {id}")
                 return record
         except urllib.error.HTTPError as err:
             if err.code == 429:
                 if i < retries - 1:  
-                    logging.info(f"Fetching. Output available in {wait_time} seconds...")
+                    logger.info(f"Fetching. Output available in {wait_time} seconds...")
                     time.sleep(wait_time)  
                     continue
-            logging.error(f"HTTP error occurred while fetching details for ID {id}: {err}")
+            logger.error(f"HTTP error occurred while fetching details for ID {id}: {err}")
             raise FetchError(f"HTTP error occurred while fetching details for ID {id}: {err}")
         except urllib.error.URLError as e:
-            logging.error(f"Network error occurred while fetching details for ID {id}: {e}")
+            logger.error(f"Network error occurred while fetching details for ID {id}: {e}")
             raise FetchError(f"Network error occurred while fetching details for ID {id}: {e}")
         except Exception as e:
-            logging.error(f"Unexpected error occurred while fetching details for ID {id}: {e}")
+            logger.error(f"Unexpected error occurred while fetching details for ID {id}: {e}")
             raise FetchError(f"Unexpected error occurred while fetching details for ID {id}: {e}")
 
 def fetch_article_ids(args):
@@ -154,11 +194,11 @@ def fetch_article_ids(args):
     Returns:
         list
     """
-    handle = Entrez.esearch(db='pubmed', term=args.query, reldate=args.days, datetype='pdat')
+    handle = Entrez.esearch(db='pubmed', term=args.query, reldate=args.days, datetype='pdat', retmax=1000)
     record = Entrez.read(handle)
     idlist = record['IdList']
     print(f"Found {len(idlist)} articles matching the query term")
-    logging.info(f"Found {len(idlist)} articles matching the query term")
+    logger.info(f"Found {len(idlist)} articles matching the query term")
     return idlist
 
 def fetch_all_article_details(idlist):
@@ -200,7 +240,7 @@ def print_and_store_results(records, args):
 
     for i, record in enumerate(records, 1):
         if record is None:
-            logging.error(f"Failed to fetch details for article {i}")
+            logger.error(f"Failed to fetch details for article {i}")
             continue
 
         title = record.get("TI", "?")
@@ -232,7 +272,7 @@ def print_and_store_results(records, args):
         df = pd.DataFrame(data)
         output_path = os.path.join(output_directory, 'pubmed_results.csv')
         df.to_csv(output_path, index=False)
-        logging.info(f"Results have been written to: {output_path}")
+        logger.info(f"Results have been written to: {output_path}")
         print(f"Results have been written to: {output_path}")
 
 # --- Cycling one record at a time as opposed to a list view ---
@@ -285,6 +325,20 @@ def interact_with_user(records):
                 print("Invalid selection. Please enter a valid article number.\n")
     except ValueError:
         print("Invalid input. Please enter a number or 'q' to quit.")
+        
+def prompt_for_arguments():
+    """
+    Prompts the user for new arguments and returns them as an argparse.Namespace object.
+
+    Returns:
+        argparse.Namespace
+    """
+    query = input("Enter the query term: ")
+    days = int(input("Enter the number of days: "))
+    clearcache = input("Clear cache? (y/n): ").lower() == 'y'
+    output = input("Enter output file name (or leave blank for no output file): ")
+    args = argparse.Namespace(query=query, days=days, clearcache=clearcache, output=output if output else None)
+    return args
 
 def open_in_default_browser(url):
     """
@@ -298,9 +352,38 @@ def open_in_default_browser(url):
     """
     if url.startswith("https://doi.org/") or url.startswith("https://pubmed.ncbi.nlm.nih.gov/"):
         webbrowser.open_new(url)
-        logging.info(f"Opened URL {url} in default browser")
+        logger.info(f"Opened URL {url} in default browser")
     else:
-        logging.error("Unsupported URL format.")
+        logger.error("Unsupported URL format.")
+        
+def process_query(args):
+    """
+    Processes a PubMed query based on the provided arguments.
+
+    This function performs the following steps:
+    1. Validates the provided arguments.
+    2. Clears the cache if the 'clearcache' argument is specified.
+    3. Fetches the IDs of PubMed articles that match the provided query term and date range.
+    4. Fetches the details for each of the fetched articles using multithreading.
+    5. Prints the details of each publication and optionally stores the results in a CSV file.
+    6. Interacts with the user to display the abstract of a selected article and optionally open its URL.
+
+    Args:
+        args (argparse.Namespace): The command-line arguments parsed by argparse.
+
+    Raises:
+        ValueError: If the arguments are not valid.
+        Exception: If there is an error fetching the article IDs or details.
+    """
+    validate_args(args)
+    clear_cache_if_needed(args)
+    print()
+    idlist = fetch_article_ids(args)
+    print()
+    records = fetch_all_article_details(idlist)
+    print()
+    print_and_store_results(records, args)
+    interact_with_user(records)
         
 # --- Main function -----------------------------------------------------------
 
@@ -309,30 +392,23 @@ def main():
     Executes the main workflow of the PubMed search script.
 
     This function performs the following steps:
-    1. Parses the command-line arguments.
-    2. Validates the command-line arguments.
-    3. Clears the cache if the 'clearcache' command-line argument is specified.
-    4. Fetches the IDs of PubMed articles that match the provided query term and date range.
-    5. Fetches the details for each of the fetched articles using multithreading.
-    6. Prints the details of each publication and optionally stores the results in a CSV file.
-    7. Interacts with the user to display the abstract of a selected article and optionally open its URL.
+    1. Parses the command-line arguments for the first run.
+    2. Processes the PubMed query based on the provided arguments.
+    3. Asks the user if they wish to perform another query.
+    4. If the user wishes to perform another query, prompts the user for new arguments and repeats the process.
+    5. If the user does not wish to perform another query, breaks the loop and ends the program.
 
-    This function is intended to be called when the script is run as a standalone program.
+    Raises:
+        ValueError: If the arguments are not valid.
+        Exception: If there is an error fetching the article IDs or details.
     """
+    args = parse_arguments()  # Use command-line arguments for the first run
     while True:
-        args = parse_arguments()
-        validate_args(args)
-        clear_cache_if_needed(args)
-        print()
-        idlist = fetch_article_ids(args)
-        print()
-        records = fetch_all_article_details(idlist)
-        print()
-        print_and_store_results(records, args)
-        interact_with_user(records)
+        process_query(args)
         another_query = input("Do you wish to perform another query? (y/n): ")
         if another_query.lower() != 'y':
             break
+        args = prompt_for_arguments() 
 
 if __name__ == "__main__":
     main()
