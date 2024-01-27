@@ -1,4 +1,4 @@
-# PubMed command line interface <img src="logo.png" align="right" height="160"/>
+# PubMed command line interface <img src="logo.png" align="right" height="190"/>
 
 This repository contains a command line interface designed to search PubMed for a specific query term. 
 
