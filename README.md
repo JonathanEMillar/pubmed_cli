@@ -45,9 +45,12 @@ pip install -r requirements.txt
    Flags
 
     -d, --days: The number of days back to search in PubMed. It's an integer and the default value is 1.
+
     -o, --output: A flag indicating whether to output the results to a CSV file. It's a boolean and the default value is False.
+
     -q, --query: The query term for the PubMed search. It's a string and the default value is taken as the 'QueryTerm' from the configuration file.
-    -c, --clearcache: A flag indicating whether to clear the cache before running the script. It's a boolean and the default value is False.
+
+     -c, --clearcache: A flag indicating whether to clear the cache before running the script. It's a boolean and the default value is False.
 
    A default search term can be set in the config.yaml.
 4. The script will display the search results in the terminal. 
