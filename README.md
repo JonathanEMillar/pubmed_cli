@@ -1,6 +1,8 @@
 # PubMed command line interface <img src="logo.png" align="right" height="139"/>
 
-This repository contains a command line interface designed to search PubMed for a specific query term and for a specified number of prior days. I use this as a tool to regularly view publications in my field. 
+This repository contains a command line interface designed to search PubMed for a specific query term. 
+
+I use this as a tool to keep up to date with publications in my field. 
 
 The program is written in python and uses the Biopython library to interact with the PubMed database. 
 
