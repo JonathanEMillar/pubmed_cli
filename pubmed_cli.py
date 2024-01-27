@@ -65,17 +65,17 @@ def setup_logger():
     """
     Sets up the logger for the script.
 
-    This function creates a logger named 'pubmed_logger' that writes log messages to a file named 'pubmed.log'.
+    This function creates a logger named 'pubmedcli_logger' that writes log messages to a file named 'pubmedcli.log'.
     The logger's level is set to DEBUG, so it logs all messages of level DEBUG and higher.
     The log messages are formatted to include the timestamp, logger name, message level, and message.
 
     Returns:
         logging.Logger: The created logger.
     """
-    logger = logging.getLogger('pubmed_logger')
+    logger = logging.getLogger('pubmedcli_logger')
     logger.setLevel(logging.DEBUG)  
 
-    handler = logging.FileHandler('pubmed.log')
+    handler = logging.FileHandler('pubmedcli.log')
     handler.setLevel(logging.DEBUG)  
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -101,7 +101,7 @@ def parse_arguments():
     The following command-line arguments are defined:
     -d, --days: The number of days back to search in PubMed. It's an integer and the default value is 1.
     -o, --output: A flag indicating whether to output the results to a CSV file. It's a boolean and the default value is False.
-    -q, --query: The query term for the PubMed search. It's a string and the default value is the 'QueryTerm' from the configuration file.
+    -q, --query: The query term for the PubMed search. It's a string and the default value is taken as the 'QueryTerm' from the configuration file.
     -c, --clearcache: A flag indicating whether to clear the cache before running the script. It's a boolean and the default value is False.
 
     Returns:
@@ -137,7 +137,7 @@ def validate_args(args):
 
 def clear_cache_if_needed(args):
     """
-    Clears the cache directory if the clearcache argument is specified.
+    Clears the cache directory if the clear cache argument is specified.
 
     Args:
         args (argparse.Namespace)
@@ -263,33 +263,12 @@ def print_and_store_results(records, args):
         print("   PubMed URL:", pubmed_url)
         print()
 
-        # --- Cycling one record at a time as opposed to a list view ---
-        #view_abstract_prompt = input("Would you like to view the abstract of this article? (y/n): ")
-        #if view_abstract_prompt.lower() == "y":
-        #    view_abstract(record)
-
     if args.output:
         df = pd.DataFrame(data)
         output_path = os.path.join(output_directory, 'pubmed_results.csv')
         df.to_csv(output_path, index=False)
         logger.info(f"Results have been written to: {output_path}")
         print(f"Results have been written to: {output_path}")
-
-# --- Cycling one record at a time as opposed to a list view ---
-
-#    def view_abstract(record):
-        """
-        Displays the abstract of a PubMed article.
-
-        Args:
-            record (dict): A dictionary containing the details of a PubMed article.
-        """
-#        abstract = record.get("AB")
-#        if abstract:
-#            print("\nAbstract:\n", abstract)
-#         else:
-#             print("No abstract available for this article.")
-#         print()
         
 def interact_with_user(records):
     """
