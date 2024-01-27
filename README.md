@@ -42,7 +42,7 @@ pip install -r requirements.txt
    ```
    This command will search PubMed for publications containing the term "Respiratory Distress Syndrome, Adult" within the last 7 days and output the results to a CSV file.
 
-   Flags
+   Flags:
 
     -d, --days: The number of days back to search in PubMed. It's an integer and the default value is 1.
 
