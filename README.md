@@ -1,4 +1,4 @@
-# PubMed command line interface
+# PubMed command line interface <img src="man/figures/logo.png" align="right" height="139"/>
 
 This repository contains a command line interface designed to search PubMed for a specific query term and for a specified number of prior days. I use this as a tool to regularly view publications in my field. 
 
