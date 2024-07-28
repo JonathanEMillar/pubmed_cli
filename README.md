@@ -1,68 +1,101 @@
-# PubMed command line interface <img src="logo.png" align="right" height="200"/>
+# PubMed command line interface `<img src="logo.png" align="right" height="200"/>`
 
-This repository contains a command line interface designed to search PubMed for a specific query term. 
+## Overview
 
-I use this as a tool to keep up to date with publications in my field. 
-
-The program is written in python and uses the Biopython library to interact with the PubMed database. 
+The PubMed CLI tool is a powerful and efficient command-line interface for searching and retrieving articles from the PubMed database. It allows users to perform targeted searches, fetch article details, and export results in various formats.
 
 ## Features
 
-- Search PubMed for recent publications using a specific query term
-- Specify the number of days back to search
-- Fetch article details including title, authors, journal, publication date, PubMed ID, and DOI URL
-- Option to output the results to a .csv file
-- View abstracts of selected articles
-- Open article URLs in default browser
+* Search PubMed database using custom queries
+* Retrieve article details including title, authors, journal, and abstract
+* Export results to CSV format
+* Cache search results for improved performance
+* Multi-threaded article fetching for faster retrieval
+* Interactive mode for browsing search results
+* Configurable via YAML file
 
 ## Prerequisites
 
-Before running the script, install the dependencies:
-
-```
-pip install -r requirements.txt
-```
+* Python 3.7+
+* pip (Python package installer)
 
 ## Installation
 
-1. Clone this repository to your local machine or download the `pubmed_cli.py` script.
-2. Create a config.yaml and save it in the same directory. This should contain the following:
+1. Clone the repository:
 
-   ```yaml
-   Email: [your email]
-   APIKey: [your Pubmed API key]
-   OutputDirectory: ["/Path/to/output/directory"]
-   QueryTerm: ["example query"]
-   ```
-   You can obtain an API key from the [NCBI API Key website](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/).
+   `git clone https://github.com/JonathanEMillar/pubmed_cli.git`
+   `cd pubmed_cli  
+   `
+2. Install the required dependencies:
+
+   `pip install -r requirements.txt  
+   `
+3. Set up your configuration:
+
+   * Copy `config.yaml`
+   * Edit `config.yaml` and add your email and NCBI API key
+
+You can obtain an API key from the [NCBI website](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/). 
 
 ## Use
 
-1. Open a terminal and navigate to the directory where the script is located. 
-2. Run the script using the following command:
+### Basic use
 
-   ```shell
-   python pubmed_cli.py -q "Respiratory Distress Syndrome, Adult" -d 7 -o
-   ```
-   This command will search PubMed for publications containing the term "Respiratory Distress Syndrome, Adult" within the last 7 days and output the results to a CSV file.
+To perform a basic search, use the following command:
 
-   Flags:
+`python pubmed_search.py -q "your search query" -d 7`
 
-    -d, --days: The number of days back to search in PubMed. It's an integer and the default value is 1.
+This will search for articles published in the last 7 days matching your query.
 
-    -o, --output: A flag indicating whether to output the results to a CSV file. It's a boolean and the default value is False.
+### Command-line Options
 
-    -q, --query: The query term for the PubMed search. It's a string and the default value is taken as the 'QueryTerm' from the configuration file.
+* `-q, --query`: Specify the search query (required)
+* `-d, --days`: Number of days back to search (default: 1)
+* `-o, --output`: Enable CSV output of results
+* `-c, --clearcache`: Clear the cache before running
 
-     -c, --clearcache: A flag indicating whether to clear the cache before running the script. It's a boolean and the default value is False.
+### Interactive Mode
 
-   A default search term can be set in the config.yaml.
-4. The script will display the search results in the terminal. 
-5. The program caches search results, saving additional API calls when the query is repeated. To clear the cache use the -c flag.
-6. Individual record can be selected to view the abstract.
-7. An option is available to open the slected records PubMed entry in the deafult browser.
+After displaying search results, the tool enters an interactive mode where you can:
 
-## To-Do
+* View article abstracts
+* Open article URLs in your default web browser
+* Perform new searches
 
-- [x] Add ability to try addiitonal queries without restarting the program
-- [x] Create unit tests
+### Configuration
+
+The `config.yaml` file contains important settings:
+
+yaml
+
+`Email: "your.email@example.com"`
+`APIKey: "your_ncbi_api_key"`
+`OutputDirectory: "/path/to/output/directory"`
+`QueryTerm**: "default search term"`
+
+Ensure you replace the placeholders with your actual information.
+
+### Caching
+
+The tool uses joblib to cache article details, improving performance for repeated searches. The cache is stored in the `artcile cache` directory.
+
+### Logging
+
+Logs are written to `pubmedcli.log` in the same directory as the script.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+* This tool uses the Biopython library for interacting with the NCBI Entrez system
+* Thanks to the NCBI for providing the Entrez Programming Utilities
+
+## Support
+
+If you encounter any problems or have any questions, please open an issue on the GitHub repository.
