@@ -69,8 +69,11 @@ The `config.yaml` file contains important settings:
 yaml
 
 `Email: "your.email@example.com"`
+
 `APIKey: "your_ncbi_api_key"`
+
 `OutputDirectory: "/path/to/output/directory"`
+
 `QueryTerm**: "default search term"`
 
 Ensure you replace the placeholders with your actual information.
