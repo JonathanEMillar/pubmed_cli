@@ -2,8 +2,6 @@
 
 <img src="logo.png" align="right" height="200"/>
 
-## Overview
-
 The PubMed CLI tool is a powerful and efficient command-line interface for searching and retrieving articles from the PubMed database. It allows users to perform targeted searches, fetch article details, and export results in various formats.
 
 ## Features
